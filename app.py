@@ -1,3 +1,3 @@
-import stremlit as st
+import streamlit as st
 st.title('between in line')
-st. write('stone')
+st.write('stone')
