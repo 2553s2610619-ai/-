@@ -1,36 +1,47 @@
 import streamlit as st
+import time
 
-# 제목
-st.title("🥗 다이어트 관리 앱")
+# 문장 리스트
+sentences = [
+    "안녕하세요 반갑습니다",
+    "파이썬은 재미있는 언어입니다",
+    "스트림릿으로 웹앱 만들기",
+    "타자 연습을 시작해봅시다"
+]
 
-# 사용자 정보 입력
-name = st.text_input("이름을 입력하세요")
+st.title("⌨️ 타자연습 앱")
 
-height = st.number_input("키(cm)", min_value=100, max_value=250, value=170)
-weight = st.number_input("몸무게(kg)", min_value=20, max_value=300, value=60)
+# 문장 선택
+if "sentence" not in st.session_state:
+    st.session_state.sentence = sentences[0]
 
-# BMI 계산
-if st.button("BMI 계산하기"):
-    height_m = height / 100
-    bmi = weight / (height_m ** 2)
+if st.button("새 문장"):
+    st.session_state.sentence = sentences[
+        (sentences.index(st.session_state.sentence) + 1) % len(sentences)
+    ]
 
-    st.subheader(f"{name}님의 BMI 결과")
-    st.write(f"BMI: {bmi:.2f}")
+target = st.session_state.sentence
 
-    # 결과 판정
-    if bmi < 18.5:
-        st.success("저체중입니다.")
-    elif bmi < 23:
-        st.success("정상 체중입니다.")
-    elif bmi < 25:
-        st.warning("과체중입니다.")
+st.subheader("따라 입력하세요")
+st.code(target)
+
+# 시작 시간 저장
+if "start_time" not in st.session_state:
+    st.session_state.start_time = time.time()
+
+user_input = st.text_input("여기에 입력하세요")
+
+# 결과 확인
+if user_input:
+    if user_input == target:
+        end_time = time.time()
+        elapsed = round(end_time - st.session_state.start_time, 2)
+
+        st.success("정답입니다!")
+        st.write(f"걸린 시간: {elapsed}초")
+
+        speed = round(len(target) / elapsed, 2)
+        st.write(f"타자 속도: {speed} 글자/초")
+
     else:
-        st.error("비만입니다.")
-
-# 식단 기록
-st.header("🍎 오늘 먹은 음식 기록")
-
-food = st.text_input("먹은 음식 입력")
-
-if st.button("기록 저장"):
-    st.write(f"✅ {food} 기록 완료!")
+        st.error("틀렸습니다. 다시 입력해보세요.")
